@@ -29,6 +29,7 @@ class MyGame {
         void send(std::string message);
         void input(SDL_Event& event);
         void update();
+        void createButton(SDL_Window* window);
         void createGrid(SDL_Renderer* renderer, SDL_Texture* texture1, SDL_Texture* texture2);
         void render(SDL_Renderer* renderer);
 };

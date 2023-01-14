@@ -31,7 +31,6 @@ void MyGame::input(SDL_Event& event) {
                     if (SDL_PointInRect(&game_data.mousePos, &game_data.grid[x][y])){
                         send(std::to_string(x));
                         send(std::to_string(y));
-                        send(std::to_string(game_data.clientNum));
                 }
             }
         }
@@ -81,13 +80,56 @@ void MyGame::createGrid(SDL_Renderer* renderer, SDL_Texture* texture1, SDL_Textu
             else if (game_data.board[x + y * 3] == *"O") {
                 SDL_RenderCopy(renderer, texture2, NULL, &game_data.grid[x][y]);
             }
+            else if (game_data.board[x + y * 3] == *"E") {
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_RenderFillRect(renderer, &game_data.grid[x][y]);
+            }
   
         }
     }
 }
+void MyGame::createButton(SDL_Window* window) {
+    const SDL_MessageBoxButtonData buttons[] = {
+        { /* .flags, .buttonid, .text */        0, 0, "O" },
+        { 0, 1, "X" },
+    };
+    const SDL_MessageBoxColorScheme colorScheme = {
+        { /* .colors (.r, .g, .b) */
+            /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+            { 255,   0,   0 },
+            /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+            {   0, 255,   0 },
+            /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+            { 255, 255,   0 },
+            /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+            {   0,   0, 255 },
+            /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+            { 255,   0, 255 }
+        }
+    };
+    const SDL_MessageBoxData messageboxdata = {
+        SDL_MESSAGEBOX_INFORMATION, /* .flags */
+        window, /* .window */
+        "Start the game", /* .title */
+        "Pick which side you want to play", /* .message */
+        SDL_arraysize(buttons), /* .numbuttons */
+        buttons, /* .buttons */
+        &colorScheme /* .colorScheme */
+    };
+    int buttonid;
+    if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+        SDL_Log("error displaying message box");
+    }
+    if (buttonid == -1) {
+        SDL_Log("no selection");
+    }
+    else {
+        SDL_Log("selection was %s", buttons[buttonid].text);
+    }
+}
 
 void MyGame::render(SDL_Renderer* renderer) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    
     SDL_Surface* surface1 = IMG_Load("X.png");
     SDL_Texture* texture1 = SDL_CreateTextureFromSurface(renderer, surface1);
     SDL_Surface* surface2 = IMG_Load("O.png");
@@ -95,11 +137,12 @@ void MyGame::render(SDL_Renderer* renderer) {
     SDL_FreeSurface(surface1);
     SDL_FreeSurface(surface2);
     createGrid(renderer, texture1, texture2);
-    SDL_RenderPresent(renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderDrawLine(renderer, 0, game_data.height/3, game_data.width, game_data.height/3);
     SDL_RenderDrawLine(renderer, 0, game_data.height * 2 / 3, game_data.width, game_data.height * 2 / 3);
     SDL_RenderDrawLine(renderer, game_data.width /3, 0, game_data.width /3, game_data.height);
     SDL_RenderDrawLine(renderer, game_data.width* 2 / 3 , 0, game_data.width * 2 / 3, game_data.height);
+    SDL_RenderPresent(renderer);
     
 
 }

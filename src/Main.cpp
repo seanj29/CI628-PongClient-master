@@ -78,8 +78,9 @@ static int on_send(void* socket_ptr) {
 }
 
 
-void loop(SDL_Renderer* renderer) {
+void loop(SDL_Renderer* renderer, SDL_Window* window) {
     SDL_Event event;
+    game->createButton(window);
 
     while (is_running) {
         // input
@@ -136,7 +137,7 @@ int run_game() {
         return -1;
     }
 
-    loop(renderer);
+    loop(renderer, window);
 
     return 0;
 }
