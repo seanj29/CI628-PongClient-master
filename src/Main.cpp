@@ -2,6 +2,7 @@
 
 #include "MyGame.h"
 
+
 using namespace std;
 
 const char* IP_NAME = "localhost";
@@ -176,7 +177,6 @@ int main(int argc, char** argv) {
     SDL_CreateThread(on_send, "ConnectionSendThread", (void*)socket);
 
     run_game();
-
     delete game;
 
     // Close connection to the server

@@ -22,9 +22,6 @@ void MyGame::input(SDL_Event& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         game_data.mousePos.x = event.motion.x;
         game_data.mousePos.y = event.motion.y;
-        switch (event.button.button)
-        {
-        case SDL_BUTTON_LEFT:
             send(event.type == SDL_MOUSEBUTTONDOWN ?"LEFT_DOWN": "LEFT_UP");
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 3; x++) {
@@ -34,30 +31,6 @@ void MyGame::input(SDL_Event& event) {
                 }
             }
         }
-            break;
-        case SDL_BUTTON_RIGHT:
-            send(event.type == SDL_MOUSEBUTTONDOWN ? "RIGHT_DOWN": "RIGHT_UP");
-            for (int y = 0; y < 3; y++) {
-                for (int x = 0; x < 3; x++) {
-                    if (SDL_PointInRect(&game_data.mousePos, &game_data.grid[x][y])) {
-                        send(std::to_string(x));
-                        send(std::to_string(y));
-                    }
-                }
-            }
-            break;
-        default:
-            send(event.type == SDL_MOUSEBUTTONDOWN ? "OTHER_DOWN" :"OTHER_UP");
-            for (int y = 0; y < 3; y++) {
-                for (int x = 0; x < 3; x++) {
-                    if (SDL_PointInRect(&game_data.mousePos, &game_data.grid[x][y])) {
-                        send(std::to_string(x));
-                        send(std::to_string(y));
-                    }
-                }
-            }
-            break;
-        }
     }
  
 }
@@ -65,11 +38,15 @@ void MyGame::input(SDL_Event& event) {
 void MyGame::update() {
 }
 
+void MyGame::pause() {
+
+
+}
 void MyGame::createGrid(SDL_Renderer* renderer, SDL_Texture* texture1, SDL_Texture* texture2) {
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
-            game_data.grid[x][y].x = x * 800 / 3;
-            game_data.grid[x][y].y = y * 200;
+            game_data.grid[x][y].x = x * game_data.width / 3;
+            game_data.grid[x][y].y = y * game_data.height / 3;
             game_data.grid[x][y].w = game_data.width / 3;
             game_data.grid[x][y].h = game_data.height / 3;
 
@@ -90,8 +67,8 @@ void MyGame::createGrid(SDL_Renderer* renderer, SDL_Texture* texture1, SDL_Textu
 }
 void MyGame::createButton(SDL_Window* window) {
     const SDL_MessageBoxButtonData buttons[] = {
-        { /* .flags, .buttonid, .text */        0, 0, "O" },
-        { 0, 1, "X" },
+        { /* .flags, .buttonid, .text */        SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "X" },
+        { 0, 1, "O" },
     };
     const SDL_MessageBoxColorScheme colorScheme = {
         { /* .colors (.r, .g, .b) */
