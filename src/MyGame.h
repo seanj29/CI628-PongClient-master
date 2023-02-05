@@ -16,9 +16,10 @@
 
 static struct GameData {
     std::string board;
-    int clientNum = 0;
-    bool playerXTurn = true;
+    int clientNum;
     bool GameFinished = false;
+    bool inputEnabled = false;
+    bool yourTurn = false;
     SDL_Rect grid[3][3] = {};
     int height = 600;
     int width = 800;
@@ -36,8 +37,9 @@ class MyGame {
         void send(std::string message);
         void input(SDL_Event& event);
         void update();
-        void pause();
+        char* fForWin();
         void createButton(SDL_Window* window);
+        void createEnd(SDL_Window* window);
         void createGrid(SDL_Renderer* renderer, SDL_Texture* texture1, SDL_Texture* texture2);
         void render(SDL_Renderer* renderer);
 };

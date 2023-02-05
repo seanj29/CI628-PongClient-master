@@ -80,43 +80,39 @@ static int on_send(void* socket_ptr) {
 
 
 void loop(SDL_Renderer* renderer, SDL_Window* window) {
-    SDL_Event event;
-    game->createButton(window);
+        SDL_Event event;
+        while (is_running) {
+            // input
+            while (SDL_PollEvent(&event)) {
+                    if ((event.type == SDL_KEYDOWN || event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONDOWN) && event.key.repeat == 0) {
+                        game->input(event);
 
-    while (is_running) {
-        // input
-        while (SDL_PollEvent(&event)) {
-            if ((event.type == SDL_KEYDOWN || event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONDOWN ) && event.key.repeat == 0) {
-                game->input(event);
+                        switch (event.key.keysym.sym) {
+                        case SDLK_ESCAPE:
+                            is_running = false;
+                            break;
 
-                switch (event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
+                        default:
+                            break;
+                        }
+                    }
+
+                    if (event.type == SDL_QUIT) {
                         is_running = false;
-                        break;
-
-                    default:
-                        break;
+                    }
                 }
-            }
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderClear(renderer);
+            game->update();
 
-            if (event.type == SDL_QUIT) {
-                is_running = false;
-            }
+            game->render(renderer);
+
+            SDL_RenderPresent(renderer);
+
+            SDL_Delay(17);
+
         }
-
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderClear(renderer);
-
-        game->update();
-
-        game->render(renderer);
-
-        SDL_RenderPresent(renderer);
-
-        SDL_Delay(17);
-
     }
-}
 
 int run_game() {
     SDL_Window* window = SDL_CreateWindow(
@@ -137,7 +133,7 @@ int run_game() {
         std::cout << "Failed to create renderer" << SDL_GetError() << std::endl;
         return -1;
     }
-
+    game->createButton(window);
     loop(renderer, window);
 
     return 0;
